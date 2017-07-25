@@ -8,7 +8,7 @@ class SQLite {
     constructor(database) {
         if (database) {
             this[m_filename] = database;
-            if (fs.exists(database)) {
+            if (fs.existsSync(database)) {
                 this[m_database] = new sqlite.Database(fs.readFileSync(database));
             } else {
                 this[m_database] = new sqlite.Database();
