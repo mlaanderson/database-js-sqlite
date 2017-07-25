@@ -1,0 +1,29 @@
+{
+  "name": "database-js-sqlite",
+  "version": "1.0.0",
+  "description": "Database-js wrapper for SQLite",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mlaanderson/database-js-sqlite.git"
+  },
+  "keywords": [
+    "database-js",
+    "sqlite"
+  ],
+  "author": "Michael Anderson <michael@anderson-clan.org>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mlaanderson/database-js-sqlite/issues"
+  },
+  "homepage": "https://github.com/mlaanderson/database-js-sqlite#readme",
+  "dependencies": {
+    "sql.js": "^0.4.0"
+  },
+  "devDependencies": {
+    "database-js2": "0.0.2"
+  }
+}
