@@ -21,9 +21,9 @@
   },
   "homepage": "https://github.com/mlaanderson/database-js-sqlite#readme",
   "dependencies": {
+    "database-js2": "^1.2.0",
+    "debug": "^3.0.0",
     "sql.js": "^0.4.0"
   },
-  "devDependencies": {
-    "database-js2": "0.0.2"
-  }
+  "devDependencies": {}
 }

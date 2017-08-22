@@ -1,4 +1,5 @@
 var sqlite = require('sql.js');
+var debug = require('debug')('database-js-sqlite');
 const fs = require('fs');
 
 var m_database = Symbol('database');
@@ -25,9 +26,16 @@ class SQLite {
             let data = self[m_database].exec(sql);
             let results = [];
 
+            debug('Query: %s', sql);
+            debug('Data: %o', data);
+
+            if (data.length === 0) {
+                debug('No results from query');
+                return resolve(results);
+            }
             if (data.length != 1) {
-                reject("Invalid data returned");
-                return;
+                debug('Invalid data returned');
+                return reject("Invalid data returned");
             }
             data = data[0];
             for (let value of data.values) {
@@ -37,7 +45,10 @@ class SQLite {
                 }
                 results.push(row);
             }
-            resolve(results);
+            self.flush().then(() => {
+                debug('Results: %o', results);
+                resolve(results);
+            }).catch(reason => reject(reason));
         });
     }
 
@@ -46,7 +57,11 @@ class SQLite {
         return new Promise((resolve, reject) => {
             try {
                 self[m_database].run(sql);
-                resolve();
+                debug('Statement: %s', sql);
+
+                self.flush().then(() => {
+                    resolve();
+                }).catch(reason => reject(reason));
             } catch (error) {
                 reject(error);
             }
@@ -54,6 +69,10 @@ class SQLite {
     }
 
     close() {
+        return this.flush();
+    }
+
+    flush() {
         var self = this;
         return new Promise((resolve, reject) => {
             if (self[m_filename]) {
