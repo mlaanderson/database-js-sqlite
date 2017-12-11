@@ -4,6 +4,7 @@ const fs = require('fs');
 
 var m_database = Symbol('database');
 var m_filename = Symbol('filename');
+var m_transaction = Symbol('transaction');
 
 class SQLite {
     constructor(database) {
@@ -18,6 +19,7 @@ class SQLite {
             this[m_database] = new sqlite.Database();
             this[m_filename] = null;
         }
+        this[m_transaction] = false;
     }
 
     query(sql) {
@@ -86,6 +88,65 @@ class SQLite {
             } else {
                 resolve();
             }
+        });
+    }
+
+    isTransactionSupported() {
+        return true;
+    }
+
+    inTransaction() {
+        return this[m_transaction];
+    }
+
+    beginTransaction() {
+        var self = this;
+        if (this.inTransaction() == true) {
+            return Promise.resolve(false);
+        }
+        return new Promise((resolve, reject) => {
+            this.execute('BEGIN')
+            .then(() => {
+                self[m_transaction] = true;
+                resolve(true);
+            })
+            .catch(error => {
+                reject(error);
+            });
+        });
+    }
+
+    commit() {
+        var self = this;
+        if (this.inTransaction() == false) {
+            return Promise.resolve(false);
+        }
+        return new Promise((resolve, reject) => {
+            this.execute('COMMIT')
+            .then(() => {
+                self[m_transaction] = false;
+                resolve(true);
+            })
+            .catch(error => {
+                reject(error);
+            })
+        });
+    }
+
+    rollback() {
+        var self = this;
+        if (this.inTransaction() == false) {
+            return Promise.resolve(false);
+        }
+        return new Promise((resolve, reject) => {
+            this.execute('ROLLBACK')
+            .then(() => {
+                self[m_transaction] = false;
+                resolve(true);
+            })
+            .catch(error => {
+                reject(error);
+            })
         });
     }
 }
