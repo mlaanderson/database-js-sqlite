@@ -1,17 +1,19 @@
-var Database = require('database-js2').Connection;
+var SQLite = require(".");
 
-(async function () {
-    let connection = new Database("database-js-sqlite:///test.sqlite", require('.'));
-    let statement = connection.prepareStatement('SELECT * FROM states WHERE State = ?');
-    let results;
+var connection = SQLite.open({
+    Database: 'test.sqlite'
+});
 
-    try {
-        results = await statement.query('South Dakota');
-        console.log(results);
-    } catch (err) {
-        console.log(err);
-    } finally {
-        await connection.close();
-        process.exit(0);
+function handleError(error) {
+    console.log("ERROR:", error);
+    process.exit(1);
+}
+
+connection.query("SELECT * FROM states WHERE State = 'South Dakota'").then((data) => {
+    if (data.length != 1) {
+        handleError(new Error("Invalid data returned"));
     }
-})();
+    connection.close().then(() => {
+        process.exit(0);
+    }).catch(handleError);
+}).catch(handleError);

@@ -1,4 +1,6 @@
 # database-js-sqlite
+[![Build Status](https://travis-ci.org/mlaanderson/database-js-sqlite.svg?branch=master)](https://travis-ci.org/mlaanderson/database-js-sqlite)
+
 SQLite wrapper for database-js
 ## About
 Database-js-mysql is a wrapper around the [sql.js](https://github.com/kripken/sql.js) package by lovasoa. It is intended to be used with the [database-js](https://github.com/mlaanderson/database-js) package. 
