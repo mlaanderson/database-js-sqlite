@@ -2,7 +2,7 @@ var sqlite = require('sql.js');
 var debug = require('debug')('database-js-sqlite');
 const fs = require('fs');
 
-var sqlite3 = require('sqlite3').verbose();
+var sqlite3 = require('sqlite3');
 const Common = require('database-js-common');
 
 var m_database = Symbol('database');
@@ -166,18 +166,23 @@ class SQLite3 {
     }
 
     query(sql) {
+        debug('Query: %s', sql);
+    
         return new Promise((resolve, reject) => {
             this.__database.all(sql, (err, rows) => {
                 if (err) {
                     return reject(err);
                 }
+                debug('Data: %o', rows);
                 return resolve(rows);
             });
         });
     }
 
     execute(sql) {
-        return new Promise((resolve, reject) => {
+        debug('Execute: %s', sql);
+
+    return new Promise((resolve, reject) => {
             this.__database.exec(sql, (err) => {
                 if (err) {
                     return reject(err);
