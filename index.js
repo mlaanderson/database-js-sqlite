@@ -3,6 +3,7 @@ var debug = require('debug')('database-js-sqlite');
 const fs = require('fs');
 
 var sqlite3 = require('sqlite3').verbose();
+const Common = require('database-js-common');
 
 var m_database = Symbol('database');
 var m_filename = Symbol('filename');
@@ -256,6 +257,17 @@ class SQLite3 {
 
 module.exports = {
     open: function(connection) {
-        return new SQLite3(connection.Database);
+        let useSqlite3 = true;
+        if (connection.Parameters) {
+            let params = Common.parseConnectionParams(connection.Parameters);
+            if (("driver" in params == true) && (params.driver === "sql.js")) {
+                useSqlite3 = false;
+            }
+        }
+        if (useSqlite3 == true) {
+            return new SQLite3(connection.Database);
+        } else {
+            return new SQLite(connection.Database);
+        }
     }
 };
