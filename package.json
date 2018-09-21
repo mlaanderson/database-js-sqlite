@@ -1,6 +1,6 @@
 {
   "name": "database-js-sqlite",
-  "version": "1.2.0",
+  "version": "1.2.4",
   "description": "Database-js wrapper for SQLite",
   "main": "index.js",
   "scripts": {
@@ -21,8 +21,10 @@
   },
   "homepage": "https://github.com/mlaanderson/database-js-sqlite#readme",
   "dependencies": {
+    "database-js-common": "git+https://github.com/mlaanderson/database-js-common.git",
     "debug": "^3.1.0",
-    "sql.js": "^0.4.0"
+    "sql.js": "^0.4.0",
+    "sqlite3": "git+https://github.com/mapbox/node-sqlite3.git"
   },
   "devDependencies": {
     "database-js": "^3.0.2"
