@@ -2,6 +2,8 @@ var sqlite = require('sql.js');
 var debug = require('debug')('database-js-sqlite');
 const fs = require('fs');
 
+var sqlite3 = require('sqlite3').verbose();
+
 var m_database = Symbol('database');
 var m_filename = Symbol('filename');
 var m_transaction = Symbol('transaction');
@@ -151,8 +153,109 @@ class SQLite {
     }
 }
 
+
+class SQLite3 {
+    constructor(database) {
+        if (database) {
+            this.__database = new sqlite3.Database(database);
+        } else {
+            this.__database = new sqlite3.Database(':memory:');
+        }
+        this.__transaction = false;
+    }
+
+    query(sql) {
+        return new Promise((resolve, reject) => {
+            this.__database.all(sql, (err, rows) => {
+                if (err) {
+                    return reject(err);
+                }
+                return resolve(rows);
+            });
+        });
+    }
+
+    execute(sql) {
+        return new Promise((resolve, reject) => {
+            this.__database.exec(sql, (err) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve();
+            });
+        });
+    }
+
+    close() {
+        return new Promise((resolve, reject) => {
+            this.__database.close((err) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(true);
+            });
+        });
+    }
+
+    isTransactionSupported() {
+        return true;
+    }
+
+    inTransaction() {
+        return this.__transaction;
+    }
+
+    beginTransaction() {
+        if (this.inTransaction() == true) {
+            return Promise.resolve(false);
+        }
+        return new Promise((resolve, reject) => {
+            this.execute('BEGIN')
+            .then(() => {
+                this.__transaction = true;
+                resolve(true);
+            })
+            .catch(error => {
+                reject(error);
+            });
+        });
+    }
+
+    commit() {
+        if (this.inTransaction() == false) {
+            return Promise.resolve(false);
+        }
+        return new Promise((resolve, reject) => {
+            this.execute('COMMIT')
+            .then(() => {
+                this.__transaction = false;
+                resolve(true);
+            })
+            .catch(error => {
+                reject(error);
+            })
+        });
+    }
+
+    rollback() {
+        if (this.inTransaction() == false) {
+            return Promise.resolve(false);
+        }
+        return new Promise((resolve, reject) => {
+            this.execute('ROLLBACK')
+            .then(() => {
+                this.__transaction = false;
+                resolve(true);
+            })
+            .catch(error => {
+                reject(error);
+            })
+        });
+    }
+}
+
 module.exports = {
     open: function(connection) {
-        return new SQLite(connection.Database);
+        return new SQLite3(connection.Database);
     }
 };
